@@ -2,7 +2,7 @@ TARGET=p2.out
 CXX=gcc
 OBJECTS=main.o plus.o minus.o
 
-$(TARGET: $(OBJECTS)
+$(TARGET): $(OBJECTS)
 	$(CXX) -o $(TARGET) $(OBJECTS)
 
 main.o: main.c
