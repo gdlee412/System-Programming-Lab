@@ -17,4 +17,4 @@ find.o: find.c
 	$(CXX) -c $^
 
 clean:
-	rm $(OBJECTS) $(TARGET)
+	rm $(OBJECTS) $(TARGET)	
