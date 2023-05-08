@@ -8,7 +8,7 @@ make p2.out
 # your code here
 echo "33 11" > answer.txt
 
-# 3) run your program and save output as output.txt
+# 3) run your program and save output as output.txt 
 echo "22 11" | ./p2.out > output.txt
 
 # 4) compare answer.txt and output.txt with diff command as result.txt
