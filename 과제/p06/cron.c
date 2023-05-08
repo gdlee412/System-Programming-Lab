@@ -51,9 +51,10 @@ int main(void) {
 		buf[0] = '\0';	
 
 		//insert your code
+		
 		char c;
 		int i = 0;
-		
+
 		while(read(fd, &c, 1) != 0) {
 			if(c == '\n' || c == '\0') {
 				break;
@@ -67,48 +68,48 @@ int main(void) {
 		char *token;
 		char *pos = buf;
 		i = 0;
+
 		while((token = strtok_r(pos, " ", &pos))) {
 			argv[i] = token;
 			i++;
 		}
-		
+
 		int min, hour;
-		
+
 		if(strncmp(argv[0], "*", 1) == 0) {
 			min = -1;
 		}
 		else {
 			min = atoi(argv[0]);
 		}
+
 		if(strncmp(argv[1], "*", 1) == 0) {
 			hour = -1;
 		}
 		else {
 			hour = atoi(argv[1]);
 		}
-		
-		if((min == -1 || tm.tm_min == min) && (hour == -1 || tm.tm_hour == hour)) { 
+
+		//int status;
+		//unsigned int pid2;
+
+		if((min == -1 || tm.tm_min == min) && (hour == -1 || tm.tm_hour == hour)) {
 			if(fork() == 0) {
 				execl("/bin/sh", "/bin/sh", "-c", argv[2], (char*) NULL);
 			}
-				
-			else {
-				t = time(NULL);
-				localtime_r(&t, &tm);
-				continue;
-			}
-			
-
+			wait(NULL);
+			//waitpid(pid2, &status, WNOHANG);
+		
 		}
-		else if(min != -1 && tm.tm_min != min) {
+		else if(tm.tm_min != min) {
 			if(tm.tm_min > min) {
-				sleep((60 - tm.tm_min + min - 1) * 60);
+				sleep((60 - tm.tm_min + min) * 60);
 			}
 			else {
-				sleep((min - tm.tm_min - 1) * 60);
+				sleep((min - tm.tm_min) * 60);
 			}
 		}
-		else if(hour != -1 && tm.tm_hour != hour) {
+		else if(tm.tm_hour != hour) {
 			if(tm.tm_hour > hour) {
 				sleep((24 - tm.tm_hour + hour) * 3600);
 			}
@@ -117,17 +118,12 @@ int main(void) {
 			}
 		}
 		
-
 		t = time(NULL);
 		localtime_r(&t, &tm);
 	
-		off_t cur = lseek(fd, 0, SEEK_SET);
-		
 		sleep(60 - tm.tm_sec % 60);
-		
-		t = time(NULL);
-		localtime_r(&t, &tm);
 	}
 
 	return 0;
 }
+
