@@ -37,73 +37,72 @@ int main() {
     }
     if ((pid = fork()) == 0) {
         while (1) {
-            /*
-             * child receives messages
-             * 1. receive normal message
+            /* 
+	     * child receives messages
+	     * 1. receive normal message
              * 1-1. print "RECEIVED [normal message]"
              * 1-2. send ack message (current timestamp)
              * 2. receive ack message using read_time and IPC_NOWAIT
              * 2-1. print "[receiver_id] read message at:\t[timestamp]"
-             */
+	     */
             msgbuf buf;
-            msgbuf_ack read_time;
+	    msgbuf_ack read_time;
             if (msgrcv(qid, (void *)&buf, sizeof buf, user_id, IPC_NOWAIT) > 0) {
                 msgbuf_ack ack;
                 ack.msgtype = T_MSG + receiver_id;
                 /* your code */
 
-                time_t curtime;
-                printf("RECEIVED %s\n", buf.text);
-                time(&curtime);
-		strcpy(ack.timestamp, ctime(&curtime));
+		time_t curtime;
+		printf("RECEIVED %s\n", buf.text);
+		time(&curtime);
+		strcpy(ack.timestamp, ctime(&curtime));	
 
-                if(msgsnd(qid, (void *)&ack, sizeof ack, 0) == -1)
-                {
-                        perror("msgsnd error : ");
-                        exit(1);
-                }
+		if(msgsnd(qid, (void *)&ack, sizeof ack, 0) == -1) 
+		{
+			perror("msgsnd error : ");
+			exit(1);
+		}
 
             }
             /* your code */
-            if(msgrcv(qid, (void *)&read_time, sizeof read_time, user_id + T_MSG, IPC_NOWAIT) > 0)
-            {
-                    printf("%d read message at:\t%s", receiver_id, read_time.timestamp);
-            }
+	    if(msgrcv(qid, (void *)&read_time, sizeof read_time, user_id + T_MSG, IPC_NOWAIT) > 0)
+	    {
+		    printf("%d read message at:\t%s", receiver_id, read_time.timestamp);
+	    }
         }
 
     } else {
         while (1) {
-            /*
-             * parent sends messages
+            /* 
+	     * parent sends messages
              * 1. get normal message from stdin
              * 2. if "quit", exit both parent and child (use SIGINT)
              * 3. send normal message
-             */
+	     */
             msgbuf buf;
             buf.msgtype = receiver_id;
             char *line = NULL;
-	     size_t len = 0;
+            size_t len = 0;
             getline(&line, &len, stdin);
             /* your code */
-            if(strncmp(line, "quit", 4) == 0)
-            {
-                    kill(pid, SIGINT);
-                    wait(NULL);
-                    exit(0);
-            }
-            else
-            {
-                    buf.sender = user_id;
-                    strcpy(buf.text, line);
-
-                    if(msgsnd(qid, (void *)&buf, sizeof buf, 0) == -1)
-                    {
-                            perror("msgsend error: ");
-                            exit(1);
-                    }
-            }
+	    if(strncmp(line, "quit", 4) == 0)
+	    {
+		    kill(pid, SIGINT);
+		    wait(NULL);
+		    exit(0); 
+	    }
+	    else
+	    {
+		    buf.sender = user_id;
+		    strcpy(buf.text, line);
+		    
+		    if(msgsnd(qid, (void *)&buf, sizeof buf, 0) == -1)
+		    {
+			    perror("msgsend error: ");
+			    exit(1);
+		    }
+	    }
             free(line);
         }
     }
 }
-
