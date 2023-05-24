@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 			printf("ERROR: pthread creation failed.\n");
 			exit(1);
 		}
-	//	sleep(1);
+		sleep(1);
 	}
 	for(int t = 0; t < row; t++)
 	{
